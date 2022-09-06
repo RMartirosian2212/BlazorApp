@@ -1,0 +1,252 @@
+﻿@page "/calculator"
+@using BlazorApp.Data
+@using System.Text;
+@inject IJSRuntime JS
+
+<div class="text-center">
+    <div class="calc">
+        <div class="calc_screen">
+            <p>@calcLogic.equation</p>
+        </div>
+        <div class="calc_buttons">
+            <button class="calc_button ac bg-grey" value="AC" @onclick=@calcLogic.ClearAllButton>AC</button>
+            <button class="calc_button plus-minus bg-grey" value="+/-" @onclick=@calcLogic.PlusMinusButton>+/-</button>
+            <button class="calc_button percent bg-grey" value="%" @onclick=@calcLogic.PercentButton>%</button>
+            <button class="calc_button division bg-orange" @onclick=@(_=>calcLogic.GetValuesButton("/")) value="/">/</button>
+            <button class="calc_button seven" value="7" @onclick=@(_=>calcLogic.GetValuesButton("7"))>7</button>
+            <button class="calc_button eight" value="8" @onclick=@(_=>calcLogic.GetValuesButton("8"))>8</button>
+            <button class="calc_button nine" value="9" @onclick=@(_=>calcLogic.GetValuesButton("9"))>9</button>
+            <button class="calc_button multiply bg-orange" value="X" @onclick=@(_=>calcLogic.GetValuesButton("X"))>X</button>
+            <button class="calc_button four" value="4" @onclick=@(_=>calcLogic.GetValuesButton("4"))>4</button>
+            <button class="calc_button five" value="5" @onclick=@(_=>calcLogic.GetValuesButton("5"))>5</button>
+            <button class="calc_button six" value="6" @onclick=@(_=>calcLogic.GetValuesButton("6"))>6</button>
+            <button class="calc_button minus bg-orange" value="-" @onclick=@(_=>calcLogic.GetValuesButton("-"))>-</button>
+            <button class="calc_button one" value="1" @onclick=@(_=>calcLogic.GetValuesButton("1"))>1</button>
+            <button class="calc_button two" value="2" @onclick=@(_=>calcLogic.GetValuesButton("2"))>2</button>
+            <button class="calc_button three" value="3" @onclick=@(_=>calcLogic.GetValuesButton("3"))>3</button>
+            <button class="calc_button plus bg-orange" value="+" @onclick=@(_=>calcLogic.GetValuesButton("+"))>+</button>
+            <button class="calc_button zero" value="0" @onclick=@(_=>calcLogic.GetValuesButton("0"))>0</button>
+            <button class="calc_button dot" value="," @onclick=@(_=>calcLogic.GetValuesButton(","))>,</button>
+            <button class="calc_button equal bg-orange" value="=" @onclick=@calcLogic.ResultButton>=</button>
+        </div>
+    </div>
+</div>
+<div class="history">
+    <p>Operations history</p>
+    <ul>
+        @foreach (var item in calcLogic.equations)
+        {
+            <li>@item</li>
+        }
+    </ul>
+</div>
+<div>
+    <button class="download_button" @onclick="DownloadFileFromURL">Download</button>
+</div>
+
+
+
+@code {
+    CalculatorLogic calcLogic = new CalculatorLogic();
+    private async Task DownloadFileFromURL()
+    {
+        string path = "wwwroot/files/CalculatorHistory.txt";
+        using (StreamWriter sw = new StreamWriter(path, false, Encoding.Default))
+        {
+            foreach (var item in calcLogic.equations)
+            {
+                sw.WriteLine(item);
+            }
+        }
+        var fileName = "CalculatorHistory.txt";
+        var fileURL = "https://localhost:7233/files/calculatorhistory.txt";
+        await JS.InvokeVoidAsync("triggerFileDownload", fileName, fileURL);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*
+//    string firstNumber = "";
+//    string secondNumber = "";
+//    string sign = "";
+//    bool finish = false;
+//    string equation = "0";
+//    List<string>
+    equations = new List<string>
+        ();
+
+
+        //    private void ClearAll()
+        //    {
+        //        firstNumber = "";
+        //        secondNumber = "";
+        //        sign = "";
+        //        finish = false;
+        //        equation = "0";
+        //    }
+        //    public void GetValues(string value)
+        //    {
+        //        if (value == "-" || value == "+" || value == "X" || value == "/")
+        //        {
+        //            sign = value;
+        //            equation = sign;
+        //        }
+        //        else
+        //        {
+        //            if (secondNumber == "" && sign == "")
+        //            {
+        //                firstNumber += value;
+        //                equation = firstNumber;
+        //            }
+        //            else if (firstNumber != "" && secondNumber != "" && finish)
+        //            {
+        //                secondNumber += value;
+        //                equation = secondNumber;
+        //                finish = false;
+        //            }
+        //            else
+        //            {
+        //                secondNumber += value;
+        //                equation = secondNumber;
+        //            }
+
+        //        }
+        //    }
+        //    public void Result()
+        //    {
+        //        if (secondNumber == "")
+        //        {
+        //            secondNumber = firstNumber;
+        //        }
+        //        decimal a = decimal.Parse(firstNumber);
+        //        decimal b = decimal.Parse(secondNumber);
+        //        switch (sign)
+        //        {
+        //            case "-":
+        //                a = a - b;
+        //                equation = Convert.ToString(a);
+        //                AddToList(firstNumber, secondNumber, sign, equation);
+        //                secondNumber = "";
+        //                sign = "";
+        //                firstNumber = Convert.ToString(a);
+        //                break;
+        //            case "+":
+        //                a = a + b;
+        //                equation = Convert.ToString(a);
+        //                AddToList(firstNumber, secondNumber, sign, equation);
+        //                secondNumber = "";
+        //                sign = "";
+        //                firstNumber = Convert.ToString(a);
+        //                break;
+        //            case "X":
+        //                a = a * b;
+        //                equation = Convert.ToString(a);
+        //                AddToList(firstNumber, secondNumber, sign, equation);
+        //                secondNumber = "";
+        //                sign = "";
+        //                firstNumber = Convert.ToString(a);
+        //                break;
+        //            case "/":
+        //                if (b == 0)
+        //                {
+        //                    equation = "Error";
+        //                    AddToList(firstNumber, secondNumber, sign, equation);
+        //                    firstNumber = "";
+        //                    secondNumber = "";
+        //                    sign = "";
+        //                }
+        //                else
+        //                {
+
+        //                    a = a / b;
+        //                    equation = Convert.ToString(a);
+        //                    AddToList(firstNumber, secondNumber, sign, equation);
+        //                    secondNumber = "";
+        //                    sign = "";
+        //                    firstNumber = Convert.ToString(a);
+        //                }
+        //                break;
+        //        }
+        //        finish = true;
+        //    }
+        //    public void Percent()
+        //    {
+        //        decimal a;
+        //        if (secondNumber == "" && sign == "")
+        //        {
+        //            a = decimal.Parse(firstNumber) / 100;
+        //            firstNumber = $"{a}";
+        //            equation = firstNumber;
+        //        }
+        //        else if (firstNumber != "" && secondNumber != "")
+        //        {
+        //            a = decimal.Parse(secondNumber) / 100;
+        //            secondNumber = $"{a}";
+        //            equation = secondNumber;
+        //        }
+        //    }
+        //    public void PlusMinus()
+        //    {
+        //        decimal a;
+        //        if (secondNumber == "")
+        //        {
+        //            a = decimal.Parse(firstNumber);
+        //            a = -a;
+        //            firstNumber = $"{a}";
+        //            equation = firstNumber;
+        //        }
+        //        else if (firstNumber != "" && secondNumber != "")
+        //        {
+        //            a = decimal.Parse(secondNumber);
+        //            a = -a;
+        //            secondNumber = $"{a}";
+        //            equation = secondNumber;
+        //        }
+        //    }
+        //    private void AddToList(string firstNumber, string secondNumber, string sign, string equation)
+        //    {
+        //        if (secondNumber.StartsWith('-'))
+        //        {
+        //            equations.Add($"{firstNumber} {sign} ({secondNumber}) = {equation}");
+        //        }
+        //        else
+        //        {
+        //            equations.Add($"{firstNumber} {sign} {secondNumber} = {equation}");
+        //        }
+
+        //    }
+        //    private async Task DownloadFileFromURL()
+        //    {
+        //        string path = "C:/Users/Robert/source/repos/BlazorApp/BlazorApp/wwwroot/files/CalculatorHistory.txt";
+        //        using (StreamWriter sw = new StreamWriter(path, false, Encoding.Default))
+        //        {
+        //            foreach (var item in equations)
+        //            {
+        //                sw.WriteLine(item);
+        //            }
+        //        }
+        //        var fileName = "CalculatorHistory.txt";
+        //        var fileURL = "https://localhost:7233/files/calculatorhistory.txt";
+        //        await JS.InvokeVoidAsync("triggerFileDownload", fileName, fileURL);
+        //    }
+*@
